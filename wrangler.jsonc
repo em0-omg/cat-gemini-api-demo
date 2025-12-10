@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "uniam-api",
+  "name": "cat-gemini-api-demo",
   "main": "src/index.ts",
   "compatibility_date": "2025-12-10"
   // "compatibility_flags": [
