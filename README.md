@@ -29,23 +29,42 @@ pnpm test:watch
 
 Vitest + Cloudflare Workers Pool を使用。`src/__tests__/` 配下にテストファイルを配置。
 
+## Lint / フォーマット
+
+[Biome](https://biomejs.dev/) を使用してコードの品質を管理しています。
+
+```bash
+# Lintチェック
+pnpm lint
+
+# フォーマット
+pnpm format
+
+# Lint + フォーマット一括実行
+pnpm check
+```
+
+### コミット時の自動フォーマット
+
+[Lefthook](https://github.com/evilmartians/lefthook) により、コミット時に自動でフォーマットとLintが実行されます。
+
+初回セットアップ時は `pnpm install` で自動的にフックがインストールされます。手動でインストールする場合:
+
+```bash
+pnpm exec lefthook install
+```
+
 ## デプロイ
 
 ```bash
 pnpm deploy
 ```
 
-### GitHub Actions による自動デプロイ
+### 自動デプロイ
 
-`main` ブランチへの push で自動的にテスト実行 → デプロイされます。
+`main` ブランチへのマージで Cloudflare により自動デプロイされます。
 
-#### 必要な設定
-
-GitHub リポジトリの Settings > Secrets and variables > Actions に以下を追加:
-
-- `CLOUDFLARE_API_TOKEN`: Cloudflare API トークン
-
-トークンの作成方法は [こちら](https://zenn.dev/slowhand/articles/661b3e22b639ce) を参照。
+GitHub Actions では `main` ブランチへの PR 作成時にテストが実行されます。
 
 ## 型生成
 

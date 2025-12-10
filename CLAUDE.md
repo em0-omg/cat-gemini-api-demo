@@ -26,6 +26,15 @@ pnpm deploy
 
 # Generate/sync TypeScript types from wrangler config
 pnpm cf-typegen
+
+# Lint check
+pnpm lint
+
+# Format code
+pnpm format
+
+# Lint + Format (recommended)
+pnpm check
 ```
 
 ## Architecture
@@ -33,7 +42,9 @@ pnpm cf-typegen
 - **Runtime**: Cloudflare Workers (edge computing)
 - **Framework**: Hono - lightweight web framework for edge
 - **Testing**: Vitest + @cloudflare/vitest-pool-workers
-- **CI/CD**: GitHub Actions (test → deploy on main branch push)
+- **Linter/Formatter**: Biome
+- **Git Hooks**: Lefthook (pre-commit: auto format & lint)
+- **CI/CD**: GitHub Actions (test on PR to main), Cloudflare auto-deploy
 - **Entry Point**: `src/index.ts`
 - **Config**: `wrangler.jsonc` - Cloudflare Workers configuration
 
@@ -84,6 +95,7 @@ it('GET / returns 200', async () => {
 ## CI/CD
 
 GitHub Actions workflow (`.github/workflows/deploy.yml`):
-1. Runs on push to `main` branch
+1. Runs on pull request to `main` branch
 2. Executes tests
-3. Deploys to Cloudflare Workers (requires `CLOUDFLARE_API_TOKEN` secret)
+
+Deployment is handled automatically by Cloudflare on merge to `main`.
