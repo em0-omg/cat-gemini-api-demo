@@ -9,6 +9,15 @@ pnpm install
 pnpm dev
 ```
 
+## Testing
+```bash
+# Run tests once
+pnpm test
+
+# Run tests in watch mode (re-runs on file changes)
+pnpm test:watch
+```
+
 ## Deployment
 ```bash
 # Deploy to Cloudflare Workers (with minification)

@@ -1,9 +1,15 @@
-import { Hono } from 'hono'
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
 
-const app = new Hono()
+const app = new Hono<{ Bindings: CloudflareBindings }>();
+
+// Middleware
+app.use('*', logger());
+app.use('*', cors());
 
 app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+	return c.text('Hello Hono! from Cloudflare Workers');
+});
 
-export default app
+export default app;
