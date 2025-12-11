@@ -2,10 +2,20 @@
 
 Cloudflare Workers API powered by [Hono](https://hono.dev/).
 
+猫の健康診断アドバイスを提供するAPIです。Google Gemini APIを使用して、猫の情報に基づいた健康アドバイスを生成します。
+
 ## セットアップ
 
 ```bash
 pnpm install
+```
+
+### 環境変数の設定
+
+ローカル開発用に `.dev.vars` ファイルを作成:
+
+```
+GEMINI_API_KEY=your-gemini-api-key-here
 ```
 
 ## 開発
@@ -78,9 +88,18 @@ pnpm cf-typegen
 
 ```
 src/
-├── index.ts           # エントリーポイント（Honoアプリ定義）
+├── index.ts                    # エントリーポイント（Honoアプリ定義）
+├── types/
+│   └── cat.ts                  # 猫データの型定義
+├── services/
+│   └── gemini.ts               # Gemini APIサービス
+├── routes/
+│   └── diagnosis.ts            # 診断エンドポイント
+├── prompts/
+│   └── cat-diagnosis.ts        # プロンプトテンプレート
 └── __tests__/
-    └── index.test.ts  # テストファイル
+    ├── index.test.ts           # 基本テスト
+    └── diagnosis.test.ts       # 診断エンドポイントテスト
 ```
 
 ### ミドルウェア
@@ -110,3 +129,68 @@ app.get('/example', (c) => {
 | `d1_databases` | D1 データベース |
 | `r2_buckets` | R2 オブジェクトストレージ |
 | `ai` | Workers AI |
+
+## APIエンドポイント
+
+### GET /
+
+ヘルスチェック用エンドポイント。
+
+### POST /api/diagnosis
+
+猫の健康診断アドバイスを取得するエンドポイント。
+
+**リクエスト例:**
+
+```bash
+curl -X POST http://localhost:8787/api/diagnosis \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cat": {
+      "name": "みーちゃん",
+      "gender": "メス",
+      "neutered": true,
+      "age": 3,
+      "breed": "スコティッシュフォールド",
+      "bodyType": "普通",
+      "weight": 4.2,
+      "activityLevel": "普通",
+      "mainFood": "ドライフード",
+      "treats": "ときどき",
+      "favoriteFood": "チキン",
+      "dislikedFood": { "status": "ない" },
+      "healthConcerns": { "hasIssues": false }
+    }
+  }'
+```
+
+**レスポンス例:**
+
+```json
+{
+  "diagnosis": "## 総合評価\n\nみーちゃんは...",
+  "generatedAt": "2025-12-12T10:30:00.000Z"
+}
+```
+
+### 猫情報のフィールド
+
+| フィールド | 型 | 説明 |
+|-----------|-----|------|
+| `name` | string | 猫の名前 |
+| `gender` | "オス" \| "メス" | 性別 |
+| `neutered` | boolean | 去勢済みか |
+| `age` | number | 年齢（歳） |
+| `breed` | string | 猫種 |
+| `bodyType` | string | 体型（痩せすぎ/ちょい痩せ/普通/ちょいおデブ/おデブちゃん） |
+| `weight` | number | 体重（kg） |
+| `activityLevel` | string | 活動量（ずっと寝てる/普通/よく飛ぶ） |
+| `mainFood` | string | 主食（ドライフード/ウェットフード/その他） |
+| `treats` | string | おやつ頻度（ときどき/毎日/全くあげない） |
+| `favoriteFood` | string | 好きな食べ物（チキン/ビーフ/お魚/なんでも好き） |
+| `dislikedFood` | object | 苦手な食べ物 `{ status: "ない" \| "わからない" \| "ある", details?: string[] }` |
+| `healthConcerns` | object | 健康上のお悩み `{ hasIssues: boolean, concerns?: string[] }` |
+
+### 健康上のお悩み選択肢
+
+食べ過ぎ、少食、偏食・食べムラ、食物アレルギー、その他のお悩み、肥満、吐き戻し、下部尿路疾患、痩身、歯、腎臓疾患、嘔吐、便秘、涙やけ、肝臓疾患、下痢、関節、糖尿、皮膚
