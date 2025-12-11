@@ -2,7 +2,7 @@
 
 Cloudflare Workers API powered by [Hono](https://hono.dev/).
 
-猫の健康診断アドバイスを提供するAPIです。Google Gemini APIを使用して、猫の情報に基づいた健康アドバイスを生成します。
+猫のプロフィールに基づいて最適なuniam商品を提案するAPIです。Google Gemini APIの構造化出力機能を使用して、一貫したJSON形式でおすすめ商品を最大3つ提案します。
 
 ## セットアップ
 
@@ -96,7 +96,7 @@ src/
 ├── routes/
 │   └── diagnosis.ts            # 診断エンドポイント
 ├── prompts/
-│   └── cat-diagnosis.ts        # プロンプトテンプレート
+│   └── cat-diagnosis.ts        # uniam商品提案プロンプト + JSON Schema
 └── __tests__/
     ├── index.test.ts           # 基本テスト
     └── diagnosis.test.ts       # 診断エンドポイントテスト
@@ -138,7 +138,7 @@ app.get('/example', (c) => {
 
 ### POST /api/diagnosis
 
-猫の健康診断アドバイスを取得するエンドポイント。
+猫のプロフィールに基づいてuniam商品を提案するエンドポイント。
 
 **リクエスト例:**
 
@@ -168,7 +168,31 @@ curl -X POST http://localhost:8787/api/diagnosis \
 
 ```json
 {
-  "diagnosis": "## 総合評価\n\nみーちゃんは...",
+  "summary": "みーちゃんは3歳のスコティッシュフォールドで、普通体型・普通の活動量です。チキンが好きで、特に健康上の問題はありません。毎日の主食としてバランスの良いフードと、ときどきのおやつで楽しみを提供することをおすすめします。",
+  "recommendations": [
+    {
+      "name": "スムースチキン＆サーモン",
+      "category": "主食",
+      "series": "冷凍フレッシュフード",
+      "reason": "チキンが好きなみーちゃんに最適な総合栄養食です。鶏もも肉とサーモンを使用し、AAFCO基準準拠で栄養バランスも万全です。",
+      "features": ["鶏もも肉・サーモン使用", "AAFCO基準準拠", "国産食材を低温調理"]
+    },
+    {
+      "name": "平飼いチキン＆緑イ貝",
+      "category": "主食",
+      "series": "WiLD PRO ドライフード",
+      "reason": "NZ産平飼いチキンを使用したグレインフリーのドライフード。ウェットフードと併用することで食事のバリエーションが広がります。",
+      "features": ["グレインフリー", "免疫サポート", "スチーム製法"]
+    },
+    {
+      "name": "デンタルケア",
+      "category": "おやつ",
+      "series": "ピュアピューレ",
+      "reason": "チキン＆ホタテ味で、みーちゃんの好みに合います。口内環境ケアもできる機能性おやつです。",
+      "features": ["チキン＆ホタテ味", "口内環境ケア", "獣医師開発"]
+    }
+  ],
+  "notes": "この提案は一般的な情報提供を目的としています。具体的な健康上の問題がある場合は、獣医師にご相談ください。",
   "generatedAt": "2025-12-12T10:30:00.000Z"
 }
 ```
@@ -194,3 +218,17 @@ curl -X POST http://localhost:8787/api/diagnosis \
 ### 健康上のお悩み選択肢
 
 食べ過ぎ、少食、偏食・食べムラ、食物アレルギー、その他のお悩み、肥満、吐き戻し、下部尿路疾患、痩身、歯、腎臓疾患、嘔吐、便秘、涙やけ、肝臓疾患、下痢、関節、糖尿、皮膚
+
+### レスポンスフィールド
+
+| フィールド | 型 | 説明 |
+|-----------|-----|------|
+| `summary` | string | 猫の特徴と食事選びのポイントのサマリ |
+| `recommendations` | array | 推奨商品リスト（最大3つ） |
+| `recommendations[].name` | string | 商品名 |
+| `recommendations[].category` | string | カテゴリ（主食/おやつ/ケアフード） |
+| `recommendations[].series` | string | シリーズ名 |
+| `recommendations[].reason` | string | この猫に推奨する理由 |
+| `recommendations[].features` | string[] | 商品の特徴（2-3項目） |
+| `notes` | string | 注意事項・免責 |
+| `generatedAt` | string | 生成日時（ISO 8601形式） |

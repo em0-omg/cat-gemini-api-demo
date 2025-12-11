@@ -112,6 +112,27 @@ export interface DiagnosisResponse {
 	generatedAt: string;
 }
 
+// 提案商品の型
+export interface RecommendedProduct {
+	name: string; // 商品名
+	category: string; // カテゴリ（主食/おやつ/ケアフード）
+	series: string; // シリーズ名
+	reason: string; // この猫に推奨する理由
+	features: string[]; // 商品の特徴（2-3項目）
+}
+
+// Gemini APIからの構造化レスポンス（generatedAt以外）
+export interface RecommendationResult {
+	summary: string; // 診断サマリ（この猫の特徴と食事のポイント）
+	recommendations: RecommendedProduct[]; // 推奨商品リスト（最大3つ）
+	notes: string; // 注意事項・免責
+}
+
+// APIレスポンス型
+export interface RecommendationResponse extends RecommendationResult {
+	generatedAt: string; // 生成日時
+}
+
 /**
  * エラーレスポンス (Error Response)
  */

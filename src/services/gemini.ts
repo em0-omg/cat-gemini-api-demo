@@ -24,4 +24,23 @@ export class GeminiService {
 
 		return response.text;
 	}
+
+	async generateStructuredContent<T>(prompt: string, schema: object): Promise<T> {
+		const response = await this.ai.models.generateContent({
+			model: this.model,
+			contents: prompt,
+			config: {
+				responseMimeType: 'application/json',
+				responseJsonSchema: schema,
+				maxOutputTokens: 2048,
+				temperature: 0.7,
+			},
+		});
+
+		if (!response.text) {
+			throw new Error('Gemini API returned empty response');
+		}
+
+		return JSON.parse(response.text) as T;
+	}
 }

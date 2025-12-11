@@ -1,7 +1,12 @@
 import { Hono } from 'hono';
-import { buildCatDiagnosisPrompt } from '../prompts/cat-diagnosis';
+import { buildCatRecommendationPrompt, recommendationSchema } from '../prompts/cat-diagnosis';
 import { GeminiService } from '../services/gemini';
-import type { CatInfo, DiagnosisResponse, ErrorResponse } from '../types/cat';
+import type {
+	CatInfo,
+	ErrorResponse,
+	RecommendationResponse,
+	RecommendationResult,
+} from '../types/cat';
 
 const diagnosis = new Hono<{ Bindings: CloudflareBindings }>();
 
@@ -14,11 +19,14 @@ diagnosis.post('/', async (c) => {
 		}
 
 		const geminiService = new GeminiService(c.env.GEMINI_API_KEY);
-		const prompt = buildCatDiagnosisPrompt(body.cat);
-		const diagnosisResult = await geminiService.generateContent(prompt);
+		const prompt = buildCatRecommendationPrompt(body.cat);
+		const result = await geminiService.generateStructuredContent<RecommendationResult>(
+			prompt,
+			recommendationSchema,
+		);
 
-		return c.json<DiagnosisResponse>({
-			diagnosis: diagnosisResult,
+		return c.json<RecommendationResponse>({
+			...result,
 			generatedAt: new Date().toISOString(),
 		});
 	} catch (error) {
