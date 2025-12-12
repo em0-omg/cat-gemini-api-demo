@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>uniam ねこ診断デモ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>uniam ねこ診断</h1>
+      <p class="subtitle">ねこのプロフィールから最適なフードを提案します</p>
+    </header>
+
+    <main>
+      <form id="diagnosis-form">
+        <!-- 基本情報 -->
+        <section class="form-section">
+          <h2>基本情報</h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="name">名前 <span class="required">*</span></label>
+              <input type="text" id="name" name="name" required maxlength="50" placeholder="例: みーちゃん">
+            </div>
+            <div class="form-group">
+              <label for="gender">性別 <span class="required">*</span></label>
+              <select id="gender" name="gender" required>
+                <option value="">選択してください</option>
+                <option value="オス">オス</option>
+                <option value="メス">メス</option>
+              </select>
+            </div>
+            <div class="form-group checkbox-group">
+              <label>
+                <input type="checkbox" id="neutered" name="neutered">
+                去勢・避妊済み
+              </label>
+            </div>
+            <div class="form-group">
+              <label for="age">年齢 <span class="required">*</span></label>
+              <input type="number" id="age" name="age" required min="0" max="30" step="1" placeholder="歳">
+            </div>
+            <div class="form-group">
+              <label for="breed">猫種 <span class="required">*</span></label>
+              <input type="text" id="breed" name="breed" required maxlength="50" placeholder="例: スコティッシュフォールド">
+            </div>
+          </div>
+        </section>
+
+        <!-- 体型・活動量 -->
+        <section class="form-section">
+          <h2>体型・活動量</h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="bodyType">体型 <span class="required">*</span></label>
+              <select id="bodyType" name="bodyType" required>
+                <option value="">選択してください</option>
+                <option value="痩せすぎ">痩せすぎ</option>
+                <option value="ちょい痩せ">ちょい痩せ</option>
+                <option value="普通">普通</option>
+                <option value="ちょいおデブ">ちょいおデブ</option>
+                <option value="おデブちゃん">おデブちゃん</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="weight">体重 <span class="required">*</span></label>
+              <input type="number" id="weight" name="weight" required min="0.1" max="20" step="0.1" placeholder="kg">
+            </div>
+            <div class="form-group">
+              <label for="activityLevel">活動量 <span class="required">*</span></label>
+              <select id="activityLevel" name="activityLevel" required>
+                <option value="">選択してください</option>
+                <option value="ずっと寝てる">ずっと寝てる</option>
+                <option value="普通">普通</option>
+                <option value="よく飛ぶ">よく飛ぶ</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- 食事情報 -->
+        <section class="form-section">
+          <h2>食事情報</h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="mainFood">主食 <span class="required">*</span></label>
+              <select id="mainFood" name="mainFood" required>
+                <option value="">選択してください</option>
+                <option value="ドライフード">ドライフード</option>
+                <option value="ウェットフード">ウェットフード</option>
+                <option value="その他">その他</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="treats">おやつ頻度 <span class="required">*</span></label>
+              <select id="treats" name="treats" required>
+                <option value="">選択してください</option>
+                <option value="ときどき">ときどき</option>
+                <option value="毎日">毎日</option>
+                <option value="全くあげない">全くあげない</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="favoriteFood">好きな味 <span class="required">*</span></label>
+              <select id="favoriteFood" name="favoriteFood" required>
+                <option value="">選択してください</option>
+                <option value="チキン">チキン</option>
+                <option value="ビーフ">ビーフ</option>
+                <option value="お魚">お魚</option>
+                <option value="なんでも好き">なんでも好き</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- 苦手な食べ物 -->
+        <section class="form-section">
+          <h2>苦手なお肉やお魚</h2>
+          <div class="radio-group">
+            <label><input type="radio" name="dislikedFoodStatus" value="ない" checked> ない</label>
+            <label><input type="radio" name="dislikedFoodStatus" value="わからない"> わからない</label>
+            <label><input type="radio" name="dislikedFoodStatus" value="ある"> ある</label>
+          </div>
+          <div id="disliked-food-details" class="checkbox-list hidden">
+            <p class="checkbox-list-label">苦手な食材を選択してください:</p>
+            <label><input type="checkbox" name="dislikedFoodDetail" value="鶏肉"> 鶏肉</label>
+            <label><input type="checkbox" name="dislikedFoodDetail" value="サーモン"> サーモン</label>
+            <label><input type="checkbox" name="dislikedFoodDetail" value="牛肉"> 牛肉</label>
+            <label><input type="checkbox" name="dislikedFoodDetail" value="マグロ"> マグロ</label>
+            <label><input type="checkbox" name="dislikedFoodDetail" value="カツオ"> カツオ</label>
+            <label><input type="checkbox" name="dislikedFoodDetail" value="たら"> たら</label>
+          </div>
+        </section>
+
+        <!-- 健康上のお悩み -->
+        <section class="form-section">
+          <h2>健康上のお悩み</h2>
+          <div class="radio-group">
+            <label><input type="radio" name="hasHealthIssues" value="false" checked> ない</label>
+            <label><input type="radio" name="hasHealthIssues" value="true"> ある</label>
+          </div>
+          <div id="health-concerns-details" class="checkbox-list hidden">
+            <p class="checkbox-list-label">該当するお悩みを選択してください:</p>
+            <div class="checkbox-grid">
+              <label><input type="checkbox" name="healthConcern" value="食べ過ぎ"> 食べ過ぎ</label>
+              <label><input type="checkbox" name="healthConcern" value="少食"> 少食</label>
+              <label><input type="checkbox" name="healthConcern" value="偏食・食べムラ"> 偏食・食べムラ</label>
+              <label><input type="checkbox" name="healthConcern" value="食物アレルギー"> 食物アレルギー</label>
+              <label><input type="checkbox" name="healthConcern" value="肥満"> 肥満</label>
+              <label><input type="checkbox" name="healthConcern" value="痩身"> 痩身</label>
+              <label><input type="checkbox" name="healthConcern" value="吐き戻し"> 吐き戻し</label>
+              <label><input type="checkbox" name="healthConcern" value="嘔吐"> 嘔吐</label>
+              <label><input type="checkbox" name="healthConcern" value="下痢"> 下痢</label>
+              <label><input type="checkbox" name="healthConcern" value="便秘"> 便秘</label>
+              <label><input type="checkbox" name="healthConcern" value="下部尿路疾患"> 下部尿路疾患</label>
+              <label><input type="checkbox" name="healthConcern" value="腎臓疾患"> 腎臓疾患</label>
+              <label><input type="checkbox" name="healthConcern" value="肝臓疾患"> 肝臓疾患</label>
+              <label><input type="checkbox" name="healthConcern" value="糖尿"> 糖尿</label>
+              <label><input type="checkbox" name="healthConcern" value="歯"> 歯</label>
+              <label><input type="checkbox" name="healthConcern" value="関節"> 関節</label>
+              <label><input type="checkbox" name="healthConcern" value="皮膚"> 皮膚</label>
+              <label><input type="checkbox" name="healthConcern" value="涙やけ"> 涙やけ</label>
+              <label><input type="checkbox" name="healthConcern" value="その他のお悩み"> その他のお悩み</label>
+            </div>
+          </div>
+        </section>
+
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <span class="btn-text">診断する</span>
+          <span class="btn-loading hidden">
+            <span class="spinner"></span>
+            診断中...
+          </span>
+        </button>
+      </form>
+
+      <!-- 結果表示エリア -->
+      <section id="result" class="result-section hidden">
+        <h2>診断結果</h2>
+        <div id="result-content"></div>
+      </section>
+    </main>
+
+    <footer>
+      <p>このデモは uniam API の動作確認用です。</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

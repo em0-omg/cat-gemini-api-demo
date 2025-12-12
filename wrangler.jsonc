@@ -4,6 +4,9 @@
   "main": "src/index.ts",
   "compatibility_date": "2025-12-10",
   "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "ALLOWED_ORIGINS": "https://em0-omg.github.io"
+  },
   // "vars": {
   //   "MY_VAR": "my-variable"
   // },
