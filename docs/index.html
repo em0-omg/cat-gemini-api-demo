@@ -21,29 +21,29 @@
           <div class="form-grid">
             <div class="form-group">
               <label for="name">名前 <span class="required">*</span></label>
-              <input type="text" id="name" name="name" required maxlength="50" placeholder="例: みーちゃん">
+              <input type="text" id="name" name="name" required maxlength="50" placeholder="例: みーちゃん" value="みーちゃん">
             </div>
             <div class="form-group">
               <label for="gender">性別 <span class="required">*</span></label>
               <select id="gender" name="gender" required>
                 <option value="">選択してください</option>
                 <option value="オス">オス</option>
-                <option value="メス">メス</option>
+                <option value="メス" selected>メス</option>
               </select>
             </div>
             <div class="form-group checkbox-group">
               <label>
-                <input type="checkbox" id="neutered" name="neutered">
+                <input type="checkbox" id="neutered" name="neutered" checked>
                 去勢・避妊済み
               </label>
             </div>
             <div class="form-group">
               <label for="age">年齢 <span class="required">*</span></label>
-              <input type="number" id="age" name="age" required min="0" max="30" step="1" placeholder="歳">
+              <input type="number" id="age" name="age" required min="0" max="30" step="1" placeholder="歳" value="3">
             </div>
             <div class="form-group">
               <label for="breed">猫種 <span class="required">*</span></label>
-              <input type="text" id="breed" name="breed" required maxlength="50" placeholder="例: スコティッシュフォールド">
+              <input type="text" id="breed" name="breed" required maxlength="50" placeholder="例: スコティッシュフォールド" value="スコティッシュフォールド">
             </div>
           </div>
         </section>
@@ -58,21 +58,21 @@
                 <option value="">選択してください</option>
                 <option value="痩せすぎ">痩せすぎ</option>
                 <option value="ちょい痩せ">ちょい痩せ</option>
-                <option value="普通">普通</option>
+                <option value="普通" selected>普通</option>
                 <option value="ちょいおデブ">ちょいおデブ</option>
                 <option value="おデブちゃん">おデブちゃん</option>
               </select>
             </div>
             <div class="form-group">
               <label for="weight">体重 <span class="required">*</span></label>
-              <input type="number" id="weight" name="weight" required min="0.1" max="20" step="0.1" placeholder="kg">
+              <input type="number" id="weight" name="weight" required min="0.1" max="20" step="0.1" placeholder="kg" value="4.2">
             </div>
             <div class="form-group">
               <label for="activityLevel">活動量 <span class="required">*</span></label>
               <select id="activityLevel" name="activityLevel" required>
                 <option value="">選択してください</option>
                 <option value="ずっと寝てる">ずっと寝てる</option>
-                <option value="普通">普通</option>
+                <option value="普通" selected>普通</option>
                 <option value="よく飛ぶ">よく飛ぶ</option>
               </select>
             </div>
@@ -87,7 +87,7 @@
               <label for="mainFood">主食 <span class="required">*</span></label>
               <select id="mainFood" name="mainFood" required>
                 <option value="">選択してください</option>
-                <option value="ドライフード">ドライフード</option>
+                <option value="ドライフード" selected>ドライフード</option>
                 <option value="ウェットフード">ウェットフード</option>
                 <option value="その他">その他</option>
               </select>
@@ -96,7 +96,7 @@
               <label for="treats">おやつ頻度 <span class="required">*</span></label>
               <select id="treats" name="treats" required>
                 <option value="">選択してください</option>
-                <option value="ときどき">ときどき</option>
+                <option value="ときどき" selected>ときどき</option>
                 <option value="毎日">毎日</option>
                 <option value="全くあげない">全くあげない</option>
               </select>
@@ -105,7 +105,7 @@
               <label for="favoriteFood">好きな味 <span class="required">*</span></label>
               <select id="favoriteFood" name="favoriteFood" required>
                 <option value="">選択してください</option>
-                <option value="チキン">チキン</option>
+                <option value="チキン" selected>チキン</option>
                 <option value="ビーフ">ビーフ</option>
                 <option value="お魚">お魚</option>
                 <option value="なんでも好き">なんでも好き</option>
