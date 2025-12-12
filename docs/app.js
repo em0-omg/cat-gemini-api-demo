@@ -48,6 +48,10 @@ form.addEventListener('submit', async (e) => {
   try {
     const catInfo = buildCatInfoFromForm();
 
+    // デバッグ: 送信データをコンソールに出力
+    console.log('[DEBUG] Sending request to:', API_ENDPOINT);
+    console.log('[DEBUG] Request body:', JSON.stringify({ cat: catInfo }, null, 2));
+
     const response = await fetch(API_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -56,17 +60,37 @@ form.addEventListener('submit', async (e) => {
       body: JSON.stringify({ cat: catInfo }),
     });
 
+    console.log('[DEBUG] Response status:', response.status);
+    console.log('[DEBUG] Response headers:', Object.fromEntries(response.headers.entries()));
+
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `エラーが発生しました (${response.status})`);
+      const errorText = await response.text();
+      console.error('[DEBUG] Error response body:', errorText);
+
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { message: errorText };
+      }
+
+      // エラーの詳細を表示
+      const errorMessage = errorData.details
+        ? `${errorData.message} (${errorData.details})`
+        : errorData.message || `エラーが発生しました (${response.status})`;
+
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();
+    console.log('[DEBUG] Success response:', data);
+
     renderResult(data);
     resultSection.classList.remove('hidden');
     resultSection.scrollIntoView({ behavior: 'smooth' });
 
   } catch (error) {
+    console.error('[DEBUG] Error:', error);
     renderError(error.message);
     resultSection.classList.remove('hidden');
     resultSection.scrollIntoView({ behavior: 'smooth' });
