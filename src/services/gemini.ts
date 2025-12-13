@@ -39,7 +39,6 @@ export class GeminiService {
 							model: this.model,
 							contents: prompt,
 							config: {
-								maxOutputTokens: 2048,
 								temperature: 0.7,
 							},
 						}),
@@ -87,7 +86,6 @@ export class GeminiService {
 							config: {
 								responseMimeType: 'application/json',
 								responseJsonSchema: schema,
-								maxOutputTokens: 2048,
 								temperature: 0.7,
 							},
 						}),
@@ -111,7 +109,9 @@ export class GeminiService {
 				return JSON.parse(result.text) as T;
 			} catch (parseError) {
 				throw new Error(
-					`Failed to parse Gemini JSON response: ${parseError instanceof Error ? parseError.message : 'Unknown parse error'}`,
+					`Failed to parse Gemini JSON response: ${
+						parseError instanceof Error ? parseError.message : 'Unknown parse error'
+					}`,
 				);
 			}
 		} catch (error) {
