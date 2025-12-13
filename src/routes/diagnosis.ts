@@ -7,6 +7,7 @@ import type {
 	RecommendationResponse,
 	RecommendationResult,
 } from '../types/cat';
+import { logGeminiError } from '../utils/error-logger';
 
 const diagnosis = new Hono<{ Bindings: CloudflareBindings }>();
 
@@ -121,9 +122,14 @@ diagnosis.post('/', async (c) => {
 		}
 
 		console.log(`[${requestId}] Validation passed, calling Gemini API`);
+		const geminiStartTime = Date.now();
 
-		// Gemini API呼び出し
-		const geminiService = new GeminiService(c.env.GEMINI_API_KEY);
+		// Gemini API呼び出し with timeout and retry (設定は環境変数から取得)
+		const geminiService = new GeminiService(c.env.GEMINI_API_KEY, {
+			timeoutMs: Number(c.env.GEMINI_TIMEOUT_MS) || 15000,
+			maxRetries: Number(c.env.GEMINI_MAX_RETRIES) || 3,
+			retryDelayMs: Number(c.env.GEMINI_RETRY_DELAY_MS) || 1000,
+		});
 		const prompt = buildCatRecommendationPrompt(body.cat);
 
 		let result: RecommendationResult;
@@ -132,16 +138,51 @@ diagnosis.post('/', async (c) => {
 				prompt,
 				recommendationSchema,
 			);
-			console.log(`[${requestId}] Gemini API response received`);
+			const geminiDurationMs = Date.now() - geminiStartTime;
+			console.log(`[${requestId}] Gemini API response received in ${geminiDurationMs}ms`);
 		} catch (geminiError) {
-			console.error(`[${requestId}] Gemini API error:`, geminiError);
+			const geminiDurationMs = Date.now() - geminiStartTime;
+
+			// Log structured error with classification
+			const errorDetails = logGeminiError(geminiError, {
+				requestId,
+				operation: 'Gemini API call',
+				timestamp: new Date().toISOString(),
+				durationMs: geminiDurationMs,
+			});
+
+			// Determine appropriate HTTP status code and message based on error type
+			let statusCode = 503; // Default: Service Unavailable
+			let userMessage = 'AI診断サービスでエラーが発生しました';
+
+			switch (errorDetails.errorType) {
+				case 'TimeoutError':
+					statusCode = 504; // Gateway Timeout
+					userMessage =
+						'AI診断サービスの応答がタイムアウトしました。しばらく待ってから再度お試しください。';
+					break;
+				case 'RateLimitError':
+					statusCode = 429; // Too Many Requests
+					userMessage = 'リクエストが集中しています。しばらく待ってから再度お試しください。';
+					break;
+				case 'AuthenticationError':
+					statusCode = 500; // Internal Server Error (don't expose auth issues to users)
+					userMessage = 'サービス設定エラーが発生しました。管理者にお問い合わせください。';
+					break;
+				case 'ValidationError':
+				case 'ParseError':
+					statusCode = 400; // Bad Request
+					userMessage = 'リクエスト内容の処理に失敗しました';
+					break;
+			}
+
 			return c.json<ErrorResponse>(
 				{
-					error: 'Service Error',
-					message: 'AI診断サービスでエラーが発生しました',
-					details: geminiError instanceof Error ? geminiError.message : 'Unknown Gemini error',
+					error: errorDetails.errorType,
+					message: userMessage,
+					details: errorDetails.errorMessage,
 				} as ErrorResponse & { details: string },
-				503,
+				statusCode,
 			);
 		}
 

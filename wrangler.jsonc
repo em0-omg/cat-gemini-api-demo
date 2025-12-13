@@ -5,7 +5,11 @@
   "compatibility_date": "2025-12-10",
   "compatibility_flags": ["nodejs_compat"],
   "vars": {
-    "ALLOWED_ORIGINS": "https://em0-omg.github.io"
+    "ALLOWED_ORIGINS": "https://em0-omg.github.io",
+    // Gemini API タイムアウト・リトライ設定
+    "GEMINI_TIMEOUT_MS": "30000", // 15秒 (Gemini APIの応答待ち上限)
+    "GEMINI_MAX_RETRIES": "3", // 最大リトライ回数
+    "GEMINI_RETRY_DELAY_MS": "1000" // 初回リトライ遅延 (以降は指数バックオフ)
   },
   // "vars": {
   //   "MY_VAR": "my-variable"
