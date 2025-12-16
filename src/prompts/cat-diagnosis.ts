@@ -1,4 +1,5 @@
 import type { CatInfo } from '../types/cat';
+import type { CatDiagnosisPromptData } from '../types/prompt';
 
 // JSON Schemaの定義（Gemini API用）
 export const recommendationSchema = {
@@ -35,9 +36,14 @@ export const recommendationSchema = {
 	required: ['summary', 'recommendations', 'notes'],
 };
 
-// uniamの商品カタログ（プロンプト埋め込み用）
-const UNIAM_CATALOG = `
-## uniam（ユニアム）猫用フード 商品カタログ
+/**
+ * フォールバック用デフォルトプロンプトデータ
+ * R2から取得できない場合に使用
+ */
+export const DEFAULT_CAT_DIAGNOSIS_PROMPT: CatDiagnosisPromptData = {
+	version: '1.0.0',
+	updatedAt: '2025-12-16T00:00:00.000Z',
+	catalog: `## uniam（ユニアム）猫用フード 商品カタログ
 
 獣医師・栄養士監修のねこ専門フードブランド
 
@@ -99,10 +105,23 @@ AAFCO基準準拠。国産食材を低温調理し瞬間冷凍。
 ### 味・原材料の対応表
 **お肉系（チキン）**: スムースチキン＆サーモン、ざく切りチキン＆サーモン、平飼いチキン＆緑イ貝、デンタルケア（ピュアピューレ）、若鶏ささみ、鶏レバー、スモークチキン
 **お肉系（ビーフ）**: ざく切りビーフ＆まぐろ
-**お魚系**: スムースカツオ＆たら、ざく切りカツオ＆たら、ざく切りビーフ＆まぐろ、リフレッシュケア（まぐろ＆ミルク）、きびなご、ほぐしかつお
-`;
+**お魚系**: スムースカツオ＆たら、ざく切りカツオ＆たら、ざく切りビーフ＆まぐろ、リフレッシュケア（まぐろ＆ミルク）、きびなご、ほぐしかつお`,
+	systemPrompt:
+		'あなたはuniamの猫用フード専門アドバイザーです。\n以下のuniam商品カタログから、猫のプロフィールに最適な商品を最大3つ提案してください。',
+	selectionCriteria: `1. **主食（総合栄養食）は必ず1つ含める**
+2. 健康上のお悩みがある場合は対応するケアフードを優先的に提案
+3. 猫の好みの味（チキン/ビーフ/お魚）を考慮
+4. 体型や活動量に適した商品を選ぶ
+5. 苦手な食べ物が含まれる商品は避ける`,
+	responseGuidelines: `- summaryには、この猫の特徴と食事選びのポイントを2-3文で簡潔にまとめてください
+- 各商品の推奨理由は、この猫のプロフィールに基づいた具体的な理由を記載してください
+- notesには「この提案は一般的な情報提供を目的としています。具体的な健康上の問題がある場合は、獣医師にご相談ください。」という免責事項を含めてください`,
+};
 
-export function buildCatRecommendationPrompt(cat: CatInfo): string {
+/**
+ * 猫のプロフィール情報をフォーマット
+ */
+function formatCatProfile(cat: CatInfo): string {
 	const healthConcernsText =
 		cat.healthConcerns.hasIssues && cat.healthConcerns.concerns
 			? cat.healthConcerns.concerns.join('、')
@@ -113,12 +132,7 @@ export function buildCatRecommendationPrompt(cat: CatInfo): string {
 			? `ある（${cat.dislikedFood.details.join('、')}）`
 			: cat.dislikedFood.status;
 
-	return `あなたはuniamの猫用フード専門アドバイザーです。
-以下のuniam商品カタログから、猫のプロフィールに最適な商品を最大3つ提案してください。
-
-${UNIAM_CATALOG}
-
-## 猫のプロフィール
+	return `## 猫のプロフィール
 
 - **名前**: ${cat.name}
 - **性別**: ${cat.gender}
@@ -132,19 +146,29 @@ ${UNIAM_CATALOG}
 - **おやつの頻度**: ${cat.treats}
 - **好きな食べ物**: ${cat.favoriteFood}
 - **苦手な食べ物**: ${dislikedFoodText}
-- **健康上のお悩み**: ${healthConcernsText}
+- **健康上のお悩み**: ${healthConcernsText}`;
+}
+
+/**
+ * プロンプトデータと猫情報から完全なプロンプトを構築
+ */
+export function buildCatRecommendationPrompt(
+	cat: CatInfo,
+	promptData: CatDiagnosisPromptData,
+): string {
+	const catProfile = formatCatProfile(cat);
+
+	return `${promptData.systemPrompt}
+
+${promptData.catalog}
+
+${catProfile}
 
 ## 選定基準
 
-1. **主食（総合栄養食）は必ず1つ含める**
-2. 健康上のお悩みがある場合は対応するケアフードを優先的に提案
-3. 猫の好みの味（チキン/ビーフ/お魚）を考慮
-4. 体型や活動量に適した商品を選ぶ
-5. 苦手な食べ物が含まれる商品は避ける
+${promptData.selectionCriteria}
 
 ## 回答について
 
-- summaryには、この猫の特徴と食事選びのポイントを2-3文で簡潔にまとめてください
-- 各商品の推奨理由は、この猫のプロフィールに基づいた具体的な理由を記載してください
-- notesには「この提案は一般的な情報提供を目的としています。具体的な健康上の問題がある場合は、獣医師にご相談ください。」という免責事項を含めてください`;
+${promptData.responseGuidelines}`;
 }

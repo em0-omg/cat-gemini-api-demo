@@ -1,54 +1,56 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "cat-gemini-api-demo",
-  "main": "src/index.ts",
-  "compatibility_date": "2025-12-10",
-  "compatibility_flags": ["nodejs_compat"],
-  "vars": {
-    "ALLOWED_ORIGINS": "https://em0-omg.github.io",
-    // Gemini API タイムアウト・リトライ設定
-    "GEMINI_TIMEOUT_MS": "30000", // 15秒 (Gemini APIの応答待ち上限)
-    "GEMINI_MAX_RETRIES": "3", // 最大リトライ回数
-    "GEMINI_RETRY_DELAY_MS": "1000" // 初回リトライ遅延 (以降は指数バックオフ)
-  },
-  // "vars": {
-  //   "MY_VAR": "my-variable"
-  // },
-  // "kv_namespaces": [
-  //   {
-  //     "binding": "MY_KV_NAMESPACE",
-  //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  //   }
-  // ],
-  // "r2_buckets": [
-  //   {
-  //     "binding": "MY_BUCKET",
-  //     "bucket_name": "my-bucket"
-  //   }
-  // ],
-  // "d1_databases": [
-  //   {
-  //     "binding": "MY_DB",
-  //     "database_name": "my-database",
-  //     "database_id": ""
-  //   }
-  // ],
-  // "ai": {
-  //   "binding": "AI"
-  // },
-  "observability": {
-    "enabled": false,
-    "head_sampling_rate": 1,
-    "logs": {
-      "enabled": true,
-      "head_sampling_rate": 1,
-      "persist": true,
-      "invocation_logs": true
-    },
-    "traces": {
-      "enabled": false,
-      "persist": true,
-      "head_sampling_rate": 1
-    }
-  }
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "cat-gemini-api-demo",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-12-10",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"vars": {
+		"ALLOWED_ORIGINS": "https://em0-omg.github.io",
+		// Gemini API タイムアウト・リトライ設定
+		"GEMINI_TIMEOUT_MS": "30000", // 15秒 (Gemini APIの応答待ち上限)
+		"GEMINI_MAX_RETRIES": "3", // 最大リトライ回数
+		"GEMINI_RETRY_DELAY_MS": "1000" // 初回リトライ遅延 (以降は指数バックオフ)
+	},
+	// "vars": {
+	//   "MY_VAR": "my-variable"
+	// },
+	// "kv_namespaces": [
+	//   {
+	//     "binding": "MY_KV_NAMESPACE",
+	//     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+	//   }
+	// ],
+	"r2_buckets": [
+		{
+			"binding": "PROMPT_BUCKET",
+			"bucket_name": "uniam-prompts"
+		}
+	],
+	// "d1_databases": [
+	//   {
+	//     "binding": "MY_DB",
+	//     "database_name": "my-database",
+	//     "database_id": ""
+	//   }
+	// ],
+	// "ai": {
+	//   "binding": "AI"
+	// },
+	"observability": {
+		"enabled": false,
+		"head_sampling_rate": 1,
+		"logs": {
+			"enabled": true,
+			"head_sampling_rate": 1,
+			"persist": true,
+			"invocation_logs": true
+		},
+		"traces": {
+			"enabled": false,
+			"persist": true,
+			"head_sampling_rate": 1
+		}
+	}
 }

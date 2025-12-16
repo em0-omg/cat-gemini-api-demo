@@ -10,7 +10,13 @@
 		"lint": "biome lint .",
 		"format": "biome format --write .",
 		"check": "biome check --write .",
-		"prepare": "lefthook install"
+		"prepare": "lefthook install",
+		"r2:create-bucket": "wrangler r2 bucket create uniam-prompts",
+		"r2:upload-prompts": "wrangler r2 object put uniam-prompts/prompts/cat-diagnosis.json --file=./prompts/cat-diagnosis.json",
+		"r2:upload-prompts:remote": "wrangler r2 object put uniam-prompts/prompts/cat-diagnosis.json --file=./prompts/cat-diagnosis.json --remote",
+		"r2:get-prompt": "wrangler r2 object get uniam-prompts/prompts/cat-diagnosis.json",
+		"r2:get-prompt:remote": "wrangler r2 object get uniam-prompts/prompts/cat-diagnosis.json --remote",
+		"r2:list-buckets": "wrangler r2 bucket list"
 	},
 	"dependencies": {
 		"@google/genai": "^1.33.0",

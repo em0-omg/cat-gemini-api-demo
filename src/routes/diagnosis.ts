@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { buildCatRecommendationPrompt, recommendationSchema } from '../prompts/cat-diagnosis';
 import { GeminiService } from '../services/gemini';
+import { PromptService } from '../services/prompt';
 import type {
 	CatInfo,
 	ErrorResponse,
@@ -121,7 +122,15 @@ diagnosis.post('/', async (c) => {
 			);
 		}
 
-		console.log(`[${requestId}] Validation passed, calling Gemini API`);
+		console.log(`[${requestId}] Validation passed, loading prompt from R2`);
+
+		// R2からプロンプトデータを取得
+		const promptService = new PromptService(c.env.PROMPT_BUCKET ?? null);
+		const promptData = await promptService.getCatDiagnosisPrompt();
+
+		console.log(
+			`[${requestId}] Prompt loaded (version: ${promptData.version}), calling Gemini API`,
+		);
 		const geminiStartTime = Date.now();
 
 		// Gemini API呼び出し with timeout and retry (設定は環境変数から取得)
@@ -130,7 +139,7 @@ diagnosis.post('/', async (c) => {
 			maxRetries: Number(c.env.GEMINI_MAX_RETRIES) || 3,
 			retryDelayMs: Number(c.env.GEMINI_RETRY_DELAY_MS) || 1000,
 		});
-		const prompt = buildCatRecommendationPrompt(body.cat);
+		const prompt = buildCatRecommendationPrompt(body.cat, promptData);
 
 		let result: RecommendationResult;
 		try {
